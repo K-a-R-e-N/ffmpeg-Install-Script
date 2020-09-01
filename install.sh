@@ -18,20 +18,65 @@ echo -en "\n" ; echo "  # # Обновляем кеш данных и индек
 sudo apt-get update && sudo apt-get upgrade -y
 
 echo -en "\n" ; echo "  # # Установка необходимых пакетов и зависимостей для компиляции FFmpeg и его дополнительных библиотек"
-echo "     -Поскольку их довольно много, процесс установки может занять некоторое время"
+echo "     - Поскольку их довольно много, процесс установки может занять некоторое время"
 sudo apt -y install autoconf automake build-essential cmake doxygen git graphviz imagemagick libasound2-dev libass-dev libfreetype6-dev libgmp-dev libmp3lame-dev libopus-dev librtmp-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-net-dev libsdl2-ttf-dev libsnappy-dev libsoxr-dev libssl-dev libtool libv4l-dev libva-dev libvorbis-dev libwebp-dev libx264-dev libxcb-shape0-dev libxcb-shm0-dev libxcb-xfixes0-dev libxcb1-dev libxml2-dev lzma-dev meson nasm pkg-config python3-dev python3-pip texinfo wget yasm zlib1g-dev libavcodec-dev libavdevice-dev libavfilter-dev libavformat-dev libavutil-dev libopencore-amrwb-dev libssh-dev libvo-amrwbenc-dev libx265-dev libdrm-dev libtiff5-dev libjasper-dev libopencv-dev checkinstall libswscale-dev libdc1394-22-dev libxine2 libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev python-dev python-numpy libtbb-dev libqt4-dev libgtk2.0-dev libopencore-amrnb-dev libtheora-dev x264 v4l-utils libvdpau-dev libxvidcore-dev libzvbi-dev libvpx-dev libpulse-dev libomxil-bellagio-dev libnuma-dev libgles2-mesa-dev devscripts equivs
 
-mkdir ~/ffmpeg_sources && \
-cd ~/ffmpeg_sources && \
-git -C fdk-aac pull 2> /dev/null || git clone --depth 1 https://github.com/mstorsjo/fdk-aac && \
-cd fdk-aac && \
-autoreconf -fiv && \
-./configure --disable-shared && \
-make && \
-sudo make install
 
 
+echo -en "\n" ; echo "  # # Cоздадим каталог, в котором мы будем хранить код для каждой из этих библиотек"
+mkdir ~/ffmpeg-sources && \
 
+ffmpeg_sources 
+
+echo -en "\n" ; echo "  # # Компиляция библиотеки Fraunhofer FDK AAC для поддержки звукового формата AAC"
+git clone --depth 1 https://github.com/mstorsjo/fdk-aac.git ~/ffmpeg-sources/fdk-aac \
+  && cd ~/ffmpeg-sources/fdk-aac \
+  && autoreconf -fiv \
+  && ./configure \
+  && make -j$(nproc) \
+  && sudo make install
+
+echo -en "\n" ; echo "  # # Компиляция библиотеки dav1d для декодирования видео формата AV1 в FFmpeg"
+git clone --depth 1 https://code.videolan.org/videolan/dav1d.git ~/ffmpeg-sources/dav1d \
+  && mkdir ~/ffmpeg-sources/dav1d/build \
+  && cd ~/ffmpeg-sources/dav1d/build \
+  && meson .. \
+  && ninja \
+  && sudo ninja install
+  
+echo -en "\n" ; echo "  # # Компиляция библиотеки kvazaar, это кодировщик HEVC"
+git clone --depth 1 https://github.com/ultravideo/kvazaar.git ~/ffmpeg-sources/kvazaar \
+  && cd ~/ffmpeg-sources/kvazaar \
+  && ./autogen.sh \
+  && ./configure \
+  && make -j$(nproc) \
+  && sudo make install
+
+echo -en "\n" ; echo "  # # Компиляция библиотеки LibVPX, чтобы FFmpeg мог поддерживать видеокодеки VP8 и VP9"
+git clone --depth 1 https://chromium.googlesource.com/webm/libvpx ~/ffmpeg-sources/libvpx \
+  && cd ~/ffmpeg-sources/libvpx \
+  && ./configure --disable-examples --disable-tools --disable-unit_tests --disable-docs \
+  && make -j$(nproc) \
+  && sudo make install
+
+echo -en "\n" ; echo "  # # Компиляция библиотеки AOM для добавления поддержки кодирования в видеокодеке AP1"
+git clone --depth 1 https://aomedia.googlesource.com/aom ~/ffmpeg-sources/aom \
+  && mkdir ~/ffmpeg-sources/aom/aom_build \
+  && cd ~/ffmpeg-sources/aom/aom_build \
+  && cmake -G "Unix Makefiles" AOM_SRC -DENABLE_NASM=on -DPYTHON_EXECUTABLE="$(which python3)" -DCMAKE_C_FLAGS="-mfpu=vfp -mfloat-abi=hard" .. \
+  && sed -i 's/ENABLE_NEON:BOOL=ON/ENABLE_NEON:BOOL=OFF/' CMakeCache.txt \
+  && make -j$(nproc) \
+  && sudo make install
+  
+echo -en "\n" ; echo "  # # Компиляция библиотеки zimg для обработки и масштабирования изображений, а так же цветового пространства и глубины"
+git clone https://github.com/sekrit-twc/zimg.git ~/ffmpeg-sources/zimg \
+  && cd ~/ffmpeg-sources/zimg \
+  && sh autogen.sh \
+  && ./configure \
+  && make \
+  && sudo make install
+
+echo -en "\n" ; echo "  # # Обновление кеша ссылок, чтобы избежать проблем компоновки"
 sudo ldconfig
 
 
