@@ -14,11 +14,12 @@ echo -en "\n"
 
 Zagolovok
 
-echo -en "\n" ; echo "  # # Установка необходимых зависимостей"
-sudo apt -y install autoconf automake build-essential cmake doxygen git graphviz imagemagick libasound2-dev libass-dev libfreetype6-dev libgmp-dev libmp3lame-dev libopus-dev librtmp-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-net-dev libsdl2-ttf-dev libsnappy-dev libsoxr-dev libssh-gcrypt-dev libssl-dev libtool libv4l-dev libva-dev libvorbis-dev libwebp-dev libx264-dev libxcb-shape0-dev libxcb-shm0-dev libxcb-xfixes0-dev libxcb1-dev libxml2-dev lzma-dev meson nasm pkg-config python3-dev python3-pip texinfo wget yasm zlib1g-dev
+echo -en "\n" ; echo "  # # Обновляем кеш данных и индексы репозиторий"
+sudo apt-get update && sudo apt-get upgrade -y
 
-sudo apt install -y build-essential cmake libgtk2.0-dev pkg-config python-numpy python-dev libtiff5-dev libjasper-dev libopencv-dev checkinstall pkg-config yasm libjasper-dev libswscale-dev libdc1394-22-dev libxine2 libgstreamer0.10-dev libv4l-dev libgstreamer-plugins-base0.10-dev python-dev python-numpy libtbb-dev libqt4-dev libgtk2.0-dev libmp3lame-dev libopencore-amrnb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils autoconf automake build-essential cmake git-core libass-dev libfreetype6-dev libsdl2-dev libtool libvdpau-dev libvorbis-dev libxcb1-dev libvpx-dev libpulse-dev libsoxr-dev libopus-dev libwebp-dev libxvidcore-dev libzvbi-dev libxcb-shm0-dev libv4l-dev libxcb-xfixes0-dev libvpx-dev libmp3lame-dev pkg-config texinfo libpulse-dev libomxil-bellagio-dev libssh-gcrypt-dev libssl-dev wget zlib1g-dev nasm yasm libx264-dev libnuma-dev libnuma-dev libgles2-mesa-dev git devscripts equivs meson
-
+echo -en "\n" ; echo "  # # Установка необходимых пакетов и зависимостей для компиляции FFmpeg и его дополнительных библиотек"
+echo "     -Поскольку их довольно много, процесс установки может занять некоторое время"
+sudo apt -y install autoconf automake build-essential cmake doxygen git graphviz imagemagick libasound2-dev libass-dev libfreetype6-dev libgmp-dev libmp3lame-dev libopus-dev librtmp-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-net-dev libsdl2-ttf-dev libsnappy-dev libsoxr-dev libssl-dev libtool libv4l-dev libva-dev libvorbis-dev libwebp-dev libx264-dev libxcb-shape0-dev libxcb-shm0-dev libxcb-xfixes0-dev libxcb1-dev libxml2-dev lzma-dev meson nasm pkg-config python3-dev python3-pip texinfo wget yasm zlib1g-dev libavcodec-dev libavdevice-dev libavfilter-dev libavformat-dev libavutil-dev libopencore-amrwb-dev libssh-dev libvo-amrwbenc-dev libx265-dev libdrm-dev libtiff5-dev libjasper-dev libopencv-dev checkinstall libswscale-dev libdc1394-22-dev libxine2 libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev python-dev python-numpy libtbb-dev libqt4-dev libgtk2.0-dev libopencore-amrnb-dev libtheora-dev x264 v4l-utils libvdpau-dev libxvidcore-dev libzvbi-dev libvpx-dev libpulse-dev libomxil-bellagio-dev libnuma-dev libgles2-mesa-dev devscripts equivs
 
 mkdir ~/ffmpeg_sources && \
 cd ~/ffmpeg_sources && \
